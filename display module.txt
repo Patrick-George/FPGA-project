@@ -1,0 +1,129 @@
+module clk_c(clk,clk1); //We have to get the desired frequency
+//to clk1 from given 125 Mhz
+// inbuilt clock frequency
+input clk;
+output clk1;
+reg clk1;
+reg [26:0]q;
+ initial
+ begin
+ q<=27'd000000000;
+ clk1<=0;
+ end
+ always@(posedge clk)
+ begin
+ if(q==27'd12500) //Here i have given a suitable
+//number of my choice
+ begin
+ clk1<=~clk1;
+ q<=27'd000000000;
+ end
+ else
+ begin
+ q<=q+1;
+ end
+ end
+endmodule
+
+module display(
+    output [6:0]a,
+    
+    
+    
+    input [3:0]digit1,
+        input [3:0]digit2,
+        input [3:0]digit3,
+        input [3:0]digit4,
+     input clk,
+    output reg power1,
+    output reg power2,
+    output reg power3,
+    output reg power4
+    );  //Here a[0] = a,a[1] = b etc
+
+  //  display inst_1(a,dig1,dig2,dig3,dig4,clk1,power1,power2,power3,power4);
+    
+    reg [1:0]counter;
+ //   reg [3:0]dig;
+    initial
+    begin
+        counter = 'b00;
+         
+    end
+    reg p,b,c,d;
+    //assign p=dig[3];
+    
+    
+    assign a[0]= p | c | b&d | ~b&~d;
+    assign a[1]= ~b | ~c&~d | c&d ;
+    assign a[2]= b | ~c | d;
+    assign a[3]= p | ~b&c | ~c&b&d | c&~d | ~b&~d;
+    assign a[4]= c&~d | ~b&~d;                                   
+    assign a[5]= p | ~d&~c | b&~c | b&~d;
+    assign a[6]= p | ~b&c | c&~d | b&~c;
+    
+        
+    always@(posedge clk)
+    begin
+        
+            if(counter==0)
+            begin 
+                   power1=1;
+                   power2=0;
+                   power3=0;
+                   power4=0;
+                  
+                   p=digit1[3];
+                   b=digit1[2];
+                   c=digit1[1];
+                   d=digit1[0];
+                   
+                   counter = 'b01;
+            end         
+           else if(counter==1)
+                        begin 
+                               power1=0;
+                               power2=1;
+                               power3=0;
+                               power4=0;
+                              
+                               p=digit2[3];
+                               b=digit2[2];
+                               c=digit2[1];
+                               d=digit2[0];
+                               
+                          counter = 'b10;
+                        end         
+                       else if(counter==2)
+                                    begin 
+                                           power1=0;
+                                           power2=0;
+                                           power3=1;
+                                           power4=0;
+                                          
+                                           p=digit3[3];
+                                           b=digit3[2];
+                                           c=digit3[1];
+                                           d=digit3[0];
+                                           
+                                              counter = 'b11;
+
+                                    end         
+                                    else if(counter==3)
+                                                begin 
+                                                       power1=0;
+                                                       power2=0;
+                                                       power3=0;
+                                                       power4=1;
+                                                      
+                                                       p=digit4[3];
+                                                       b=digit4[2];
+                                                       c=digit4[1];
+                                                       d=digit4[0];
+                                                       
+                                                      counter = 'b00;
+
+                                                end           
+    end
+
+endmodule

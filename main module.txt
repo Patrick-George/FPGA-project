@@ -1,0 +1,93 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company:
+// Engineer:
+//
+// Create Date: 11/09/2017 07:53:27 PM
+// Design Name:
+// Module Name: aa
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company:
+// Engineer:
+//
+// Create Date: 08.11.2017 19:48:42
+// Design Name:
+// Module Name: aa
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+module kakashi(
+    input p1,   //For checking balance
+    input p2,   //For withdrwing money
+    input p3,   //Withdraw or check balance one more time
+    input p4,   //To enter the withdrawal money
+    input [3:0]pass,                     //The entered password
+    input [1:0]account,       //Selecting the account
+
+    output [6:0]a,   //for seven segment display
+
+    input clk,
+
+    output power1,
+    output power2,
+    output power3,
+    output power4,
+
+    input note1000,
+    input note500,
+    input note100,
+    input note50,
+  //  output count,
+
+   // output reg [3:0]pass1,
+   // output reg [3:0]pass2,
+   // output reg [3:0]pass3,
+   // output reg [3:0]pass4,
+    input s3,
+    input s4,
+    output [3:0]enable
+    );
+
+    initial
+    begin
+
+
+
+    end
+
+
+      // SPP_atm what(p1,p2,p3,p4,pass,pass1,pass2,pass3,pass4,account,a,clk,power1,power2,power3,power4,note1000,note500,note100,note50,count);
+
+        BANK call(p1,p2,p3,p4,pass,account,s3,s4,a,clk,power1,power2,power3,power4,note1000,note500,note100,note50,enable);
+
+endmodule

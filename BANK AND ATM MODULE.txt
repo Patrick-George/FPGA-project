@@ -1,0 +1,597 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company:
+// Engineer:
+//
+// Create Date: 11/09/2017 08:11:51 PM
+// Design Name:
+// Module Name: bank
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+
+////
+   // --------module bank----------
+////
+//options available: (can choose option using pushbuttons ( [3:0]push) )
+   // 1: add or remove an account
+
+ module BANK(
+
+    input p1,
+    input p2,
+    input p3,
+    input p4,
+
+    input [3:0]pass,
+
+    input [1:0]acc,
+
+    input s3,
+    input s4,
+    output [6:0]a,   //for seven segment display
+
+    input clk,
+
+    output power1,
+    output power2,
+    output power3,
+    output power4,
+
+    input n1000,n500,n100,n50,
+    output reg [3:0]enable
+    );
+
+    wire clk1;
+            clk_c popo(clk,clk1);
+
+    reg [13:0]acc1_money;
+    reg [13:0]acc2_money;
+    reg [13:0]acc3_money;
+    reg [13:0]acc4_money;
+
+    reg [3:0]dig1;   //stores the decimal digits of the account money
+    reg [3:0]dig2;
+    reg [3:0]dig3;
+    reg [3:0]dig4;
+
+    reg [13:0]acc1;
+    reg [13:0]acc2;
+    reg [13:0]acc3;
+    reg [13:0]acc4;
+
+    reg [3:0]pass1;
+    reg [3:0]pass2;
+    reg [3:0]pass3;
+    reg [3:0]pass4;
+
+    reg [13:0]withdraw;
+    reg [3:0]dig;
+    reg key;
+    
+    
+
+    reg count;
+   // reg [3:0]enable;
+
+    initial
+     begin
+
+         acc1 = acc1_money;
+         acc2 = acc2_money;
+         acc3 = acc3_money;
+         acc4 = acc4_money;
+
+         pass1= 'b0001;
+         pass2= 'b0010;
+         pass3= 'b0100;
+         pass4= 'b1000;
+
+         acc1_money= 'd5000;
+         acc2_money= 'd4000;
+         acc3_money= 'd3000;
+         acc4_money= 'd1000;
+
+         enable[0]=1;
+         enable[1]=1;
+         enable[2]=1;
+         enable[3]=1;
+
+         count=0;
+         withdraw = 'b00000000000000;
+         
+        
+
+         dig = 'd0;
+         key = 'b0;
+
+     end
+
+
+     always @(posedge clk)
+     begin
+////////////////////
+//bank module
+//////////////////
+
+if(s4==1)
+begin
+
+     //options available: (can choose option using
+   //  buttons ( [3:0]push) )
+             //1: add or remove an account
+                 //initial
+                 //begin
+
+             //choose to remove/add using one switch (s3)
+          if(p1==1)
+          begin
+             if(s3==0)   //remove account
+             begin
+                 //choose account no. using 2 switches(s0,s1);
+                 if(acc=='b00)
+                 begin
+                     enable[0] = 0;
+                     acc1_money= 'd0;
+                 end
+                 else if(acc=='b01)
+                 begin
+                     enable[1] = 0;
+                     acc2_money= 'd0;
+                 end
+                 else if(acc=='b10)
+                 begin
+                     enable[2] = 0;
+                     acc3_money= 'd0;
+                 end
+                 else if(acc=='b11)
+                 begin
+                     enable[3] = 0;
+                     acc4_money= 'd0;
+                 end
+             end
+             else if(s3==1)      //add account
+             begin
+                 if(acc=='b00)
+                 begin
+                     enable[0] = 1;
+                 end
+                 else if(acc=='b01)
+                 begin
+                     enable[1] = 1;
+                 end
+                 else if(acc=='b10)
+                 begin
+                     enable[2] = 1;
+                 end
+                 else if(acc=='b11)
+                 begin
+                     enable[3] = 1;
+                 end
+             end
+         end
+
+   // 2: deposit money
+    if(p2==1)
+    begin
+        //choose account no. using 2 switches(s0,s1);
+
+        //take input for money using exeternal switches dedicated to different denominations
+        // external switches : n1000,n500,n100,n50
+      if(count ==0)
+      begin
+        if(acc=='b00 && enable[0]==1)
+        begin
+            if( n1000 == 1)
+                if(acc1_money<8999)
+                    acc1_money <= acc1_money + 'd1000;
+            if( n500 == 1  )
+                if(acc1_money<9499)
+                    acc1_money <= acc1_money + 'd500;
+            if( n100==1 )
+                if(acc1_money<9899)
+                    acc1_money <= acc1_money + 'd100;
+            if(n50==1 )
+                if(acc1_money<9949)
+                    acc1_money <= acc1_money + 'd50;
+        end
+        else if(acc=='b01&& enable[1]==1)
+        begin
+            if( n1000 == 1 )
+                if(acc2_money<8999)
+                    acc2_money <= acc2_money + 'd1000;
+            if( n500 == 1   )
+                if(acc2_money<9499)
+                    acc2_money <= acc2_money + 'd500;
+             if( n100==1 )
+                if(acc2_money<9899)
+                    acc2_money <= acc2_money + 'd100;
+            if(n50==1 )
+                if(acc2_money<9949)
+                    acc2_money <= acc2_money + 'd50;
+        end
+        else if(acc=='b10&& enable[2]==1)
+        begin
+            if( n1000 == 1 )
+                if(acc3_money<8999)
+                    acc3_money <= acc3_money + 'd1000;
+            if( n500 == 1 )
+                if(acc3_money<9499)
+                    acc3_money <= acc3_money + 'd500;
+             if( n100==1)
+                if(acc3_money<9899)
+                    acc3_money <= acc3_money + 'd100;
+            if(n50==1 )
+                if(acc3_money<9949)
+                    acc3_money <= acc3_money + 'd50;
+        end
+        else if(acc=='b11&& enable[3]==1)
+        begin
+            if( n1000 == 1 )
+                if(acc4_money<8999)
+                    acc4_money <= acc4_money + 'd1000;
+           if( n500 == 1  )
+                if(acc4_money<9499)
+                    acc4_money <= acc4_money + 'd500;
+             if( n100==1)
+                if(acc4_money<9899)
+                    acc4_money <= acc4_money + 'd100;
+            if(n50==1)
+                if(acc4_money<9949)
+                    acc4_money <= acc4_money + 'd50;
+        end
+        count=1;
+        end
+    end
+
+/////////
+//reset
+/////////
+    if(p4 == 1)
+    begin
+        count=0;
+        acc1 = acc1_money;
+        acc2 = acc2_money;
+        acc3 = acc3_money;
+        acc4 = acc4_money;
+    end
+
+
+  //  3: changing the pin of an account
+       if(p3==1)
+            //choose account no. using 2 switches(s0,s1);
+           begin
+            if(acc=='b00)
+                 pass1<=pass;
+            else if(acc=='b01)
+                 pass2<=pass;
+            else if(acc=='b10)
+                 pass3<=pass;
+            else if(acc=='b11)
+                 pass4<=pass;
+        end
+
+  /*
+        //
+   // 4: unblocking an account
+        if( p4 ==1 )
+            //choose account no. using 2 switches(s0,s1);
+            if(acc=='b00)
+                 enable[0] = 1;
+            else if(acc=='b01)
+                 enable[1] = 1;
+            else if(acc=='b10)
+                 enable[2] = 1;
+            else if(acc=='b11)
+                 enable[3] = 1;
+*/
+
+
+        if(acc == 'b00)
+                    begin
+                       // dig = dig1;
+                       dig1 = acc1%'d10;
+                       acc1 = acc1/10;
+                       dig2 = acc1%'d10;
+                       acc1 = acc1/10;
+                       dig3 = acc1%'d10;
+                       acc1 = acc1/10;
+                       dig4 = acc1%'d10;
+                       acc1 = acc1/10;
+
+                       acc1 = acc1_money;
+
+                    end
+                if(acc == 'b01)
+                    begin
+                        //dig = dig2;
+                        dig1 = acc2%'d10;
+                        acc2 = acc2/10;
+                        dig2 = acc2%'d10;
+                        acc2 = acc2/10;
+                        dig3 = acc2%'d10;
+                        acc2 = acc2/10;
+                        dig4 = acc2%'d10;
+                        acc2 = acc2/10;
+
+                        acc2 = acc2_money;
+
+                    end
+                if(acc == 'b10)
+                    begin
+                        //dig = dig3;
+                        dig1 = acc3%'d10;
+                        acc3 = acc3/10;
+                        dig2 = acc3%'d10;
+                        acc3 = acc3/10;
+                        dig3 = acc3%'d10;
+                        acc3 = acc3/10;
+                        dig4 = acc3%'d10;
+                        acc3 = acc3/10;
+
+                        acc3 = acc3_money;
+
+                    end
+                if(acc == 'b11)
+                    begin
+                        //dig = dig4;
+                        dig1 = acc4%'d10;
+                        acc4 = acc4/10;
+                        dig2 = acc4%'d10;
+                        acc4 = acc4/10;
+                        dig3 = acc4%'d10;
+                        acc4 = acc4/10;
+                        dig4 = acc4%'d10;
+                        acc4 = acc4/10;
+
+                        acc4 = acc4_money;
+
+                    end
+    end
+
+
+
+else if(s4 == 0 )
+begin
+////////////////
+//atm module
+/////////////////
+
+if( n1000 == 1 && key == 0)
+begin
+     withdraw = withdraw + 'd1000;
+     key = 'b1;
+end
+
+if(n500 == 1 && key == 0)
+ begin
+        withdraw = withdraw + 'd500;
+        key = 'b1;
+   end
+if( n100 == 1 && key == 0)
+    begin
+           withdraw = withdraw + 'd100;
+           key = 'b1;
+      end
+if(n50 == 1 && key == 0)
+    begin
+          withdraw = withdraw + 'd50;
+          key = 'b1;
+     end
+
+if( p1 ==1 )    //For just displaying the account balance
+begin
+    if(count == 0)
+    begin
+        
+
+            count = 1;
+            if(pass == pass1 && acc == 'b00 && enable[0]==1)
+                begin
+
+                    dig1 = acc1%'d10;
+                    acc1 = acc1/10;
+                    dig2 = acc1%'d10;
+                    acc1 = acc1/10;
+                    dig3 = acc1%'d10;
+                    acc1 = acc1/10;
+                    dig4 = acc1%'d10;
+                    acc1 = acc1/10;
+
+                   // dig = dig1;
+                end
+              else if(pass == pass1 && acc == 'b00 && enable[0]==0)
+              begin
+                    dig1='d0;
+                    dig2='d0;
+                    dig3='d0;
+                    dig4='d0;                    
+              end
+              
+            if(pass == pass2 && acc == 'b01 && enable[1]==1)
+                begin
+                dig1 = acc2%'d10;
+                acc2 = acc2/10;
+                dig2 = acc2%'d10;
+                acc2 = acc2/10;
+                dig3 = acc2%'d10;
+                acc2 = acc2/10;
+                dig4 = acc2%'d10;
+                acc2 = acc2/10;
+
+                    //dig = dig2;
+                end
+                else if(pass == pass2 && acc == 'b01 && enable[1]==0)
+                              begin
+                                    dig1='d0;
+                                    dig2='d0;
+                                    dig3='d0;
+                                    dig4='d0;                    
+                              end
+                              
+                              
+            if(pass == pass3 && acc == 'b10 && enable[2]==1)
+                begin
+                dig1 = acc3%'d10;
+                acc3 = acc3/10;
+                dig2 = acc3%'d10;
+                acc3 = acc3/10;
+                dig3 = acc3%'d10;
+                acc3 = acc3/10;
+                dig4 = acc3%'d10;
+                acc3 = acc3/10;
+                    //dig = dig3;
+                end
+                else if(pass == pass3 && acc == 'b10 && enable[2]==0)
+                              begin
+                                    dig1='d0;
+                                    dig2='d0;
+                                    dig3='d0;
+                                    dig4='d0;                    
+                              end
+                             
+            if(pass == pass4 && acc == 'b11 && enable[3]==1)
+
+                begin
+                dig1 = acc4%'d10;
+                acc4 = acc4/10;
+                dig2 = acc4%'d10;
+                acc4 = acc4/10;
+                dig3 = acc4%'d10;
+                acc4 = acc4/10;
+                dig4 = acc4%'d10;
+                acc4 = acc4/10;
+                    //dig = dig4;
+                end
+                else if(pass == pass4 && acc == 'b1 && enable[3]==0)
+                              begin
+                                    dig1='d0;
+                                    dig2='d0;
+                                    dig3='d0;
+                                    dig4='d0;                    
+                              end
+                              
+    end
+
+end
+if( p3 == 1)     //This is like a reset
+begin
+    count = 0;
+     acc1 = acc1_money;
+      acc2 = acc2_money;
+      acc3 = acc3_money;
+      acc4 = acc4_money;
+    withdraw = 'b00000000000000;
+    key = 'b0;
+  
+end
+
+if( p2 ==1 )     //For withdrawing the money
+    begin
+        if(count == 0)
+        begin
+
+            if(pass == pass1 && acc == 'b00 && enable[0]==1 && acc1_money>=withdraw)
+                begin
+                    acc1_money=acc1_money - withdraw;
+                    acc1 = acc1_money;
+                end
+                
+            if(pass == pass2 && acc == 'b01 && enable[1]==1 && acc2_money>=withdraw)
+                begin
+                    acc2_money=acc2_money - withdraw;
+
+                    acc2 = acc2_money;
+                end
+                else if(pass!=pass2)
+                 
+            if(pass == pass3 && acc == 'b10 && enable[2]==1 && acc3_money>=withdraw)
+            begin
+                acc3_money=acc3_money - withdraw;
+
+                acc3 = acc3_money;
+            end
+            
+            if(pass == pass4 && acc == 'b11 && enable[3]== 1&& acc4_money>=withdraw)
+            begin
+                acc4_money=acc4_money - withdraw;
+
+                acc4 = acc4_money;
+            end
+            
+
+            if(pass == pass1 && acc == 'b00)
+                begin
+                   // dig = dig1;
+                   dig1 = acc1%'d10;
+                   acc1 = acc1/10;
+                   dig2 = acc1%'d10;
+                   acc1 = acc1/10;
+                   dig3 = acc1%'d10;
+                   acc1 = acc1/10;
+                   dig4 = acc1%'d10;
+                   acc1 = acc1/10;
+                    count = 1;
+                end
+            if(pass == pass2 && acc == 'b01)
+                begin
+                    //dig = dig2;
+                    dig1 = acc2%'d10;
+                    acc2 = acc2/10;
+                    dig2 = acc2%'d10;
+                    acc2 = acc2/10;
+                    dig3 = acc2%'d10;
+                    acc2 = acc2/10;
+                    dig4 = acc2%'d10;
+                    acc2 = acc2/10;
+                     count = 1;
+
+                end
+            if(pass == pass3 && acc == 'b10)
+                begin
+                    //dig = dig3;
+                    dig1 = acc3%'d10;
+                    acc3 = acc3/10;
+                    dig2 = acc3%'d10;
+                    acc3 = acc3/10;
+                    dig3 = acc3%'d10;
+                    acc3 = acc3/10;
+                    dig4 = acc3%'d10;
+                    acc3 = acc3/10;
+                    count = 1;
+
+                end
+            if(pass == pass4 && acc == 'b11)
+                begin
+                    //dig = dig4;
+                    dig1 = acc4%'d10;
+                    acc4 = acc4/10;
+                    dig2 = acc4%'d10;
+                    acc4 = acc4/10;
+                    dig3 = acc4%'d10;
+                    acc4 = acc4/10;
+                    dig4 = acc4%'d10;
+                    acc4 = acc4/10;
+                    count = 1;
+                end
+        end
+end
+
+    
+end
+end
+
+display inst_1(a,dig1,dig2,dig3,dig4,clk1,power1,power2,power3,power4);          //For the seven segment displays
+
+
+endmodule
